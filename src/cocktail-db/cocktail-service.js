@@ -97,18 +97,23 @@ const CocktailService = {
   },
 
   async searchById(drinkId) {
+    
     try {
+      
       const res = await axios.get(`/lookup.php?i=${drinkId}`);
 
       let parsedData = res.data.drinks.map(drink => {
+        
         let tags = drink.strTags.split(',');
         let ingredients = [];
         let measure = [];
-
+        console.log(drink['strIngredient' + 1])
         for (let i = 1; drink[ 'strIngredient' + i ] !== null; i++) {
+          
           ingredients.push(drink[ 'strIngredient' + i ]);
           measure.push(drink[ 'strMeasure' + i ]);
         }
+        
 
         return {
           id: drink.idDrink,
@@ -124,7 +129,7 @@ const CocktailService = {
           measure: measure,
         };
       });
-
+      console.log(parsedData)
       return {
         drinks: parsedData
       };
