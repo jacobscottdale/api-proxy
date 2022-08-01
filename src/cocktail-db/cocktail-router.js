@@ -28,7 +28,7 @@ random cocktail
 */
 
 cocktailRouter
-  .route('/search/drink/name/:drinkName')
+  .route('/drink/:drinkName')
   .get((req, res, next) => {
     CocktailService.searchByName(req.params.drinkName)
       .then(drinks =>
@@ -39,7 +39,7 @@ cocktailRouter
   });
 
 cocktailRouter
-  .route('/search/drink/ingredient/:ingredientName')
+  .route('/ingredient/:ingredientName')
   .get((req, res, next) => {
     CocktailService.searchByIngredient(req.params.ingredientName)
       .then(drinks => 
@@ -51,13 +51,35 @@ cocktailRouter
 
 
   cocktailRouter
-  .route('/search/drink/id/:drinkId')
+  .route('/id/:drinkId')
   .get((req, res, next) => {
     CocktailService.searchById(req.params.drinkId)
       .then(drinks => 
         res
           .status(200)
           .json(drinks))
+      .catch(next)
+  })
+
+  cocktailRouter
+  .route('/list/ingredient')
+  .get((req, res, next) => {
+    CocktailService.listIngredient()
+      .then(ingredients => 
+        res
+          .status(200)
+          .json(ingredients))
+      .catch(next)
+  })
+
+  cocktailRouter
+  .route('/list/glass')
+  .get((req, res, next) => {
+    CocktailService.listGlass()
+      .then(glasses => 
+        res
+          .status(200)
+          .json(glasses))
       .catch(next)
   })
 
