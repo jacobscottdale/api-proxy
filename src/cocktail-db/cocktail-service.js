@@ -3,34 +3,13 @@ const axios = require('axios');
 
 axios.defaults.baseURL = config.COCKTAIL_API_URL;
 
-/*
-search cocktail by name, 
-/search.php?s=
-
-ingredients
-/filter.php?i=
-
-glass type
-/filter.php?g=
-
-id
-/lookup.php?i=
-
-list glasses
-/list.php?g=list
-
-ingredients
-/list.php?i=list
-
-random cocktail
-/random.php
-*/
-
 const CocktailService = {
+
   async searchByName(drinkName) {
     try {
       const res = await axios.get(`/search.php?s=${drinkName}`);
 
+      // If API returns no drink data, return 0 results and an empty array
       if (res.data.drinks === null) {
         return {
           numberOfResults: 0,
@@ -38,14 +17,16 @@ const CocktailService = {
         };
       }
 
+      // If API does return drink data, parse out only each drink's id, name and thumbnail url
       let parsedData = res.data.drinks.map(drink => {
         return {
           id: drink.idDrink,
           name: drink.strDrink,
-          thumbnail: drink.strDrinkThumb
+          thumbnailURL: drink.strDrinkThumb
         };
       });
 
+      // Finally, return number of results and the parsed drink data
       return {
         numberOfResults: res.data.drinks.length,
         drinks: parsedData

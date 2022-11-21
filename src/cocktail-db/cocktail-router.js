@@ -1,32 +1,8 @@
 const express = require('express');
-const path = require('path');
 const CocktailService = require('./cocktail-service');
-const bodyParser = express.json();
 const cocktailRouter = express.Router();
 
-/*
-search cocktail by name, 
-/search.php?s=
-
-ingredients
-/filter.php?i=
-
-glass type
-/filter.php?g=
-
-id
-/lookup.php?i=
-
-list glasses
-/list.php?g=list
-
-ingredients
-/list.php?i=list
-
-random cocktail
-/random.php
-*/
-
+// Returns an array of drinks that match query string
 cocktailRouter
   .route('/drink/:drinkName')
   .get((req, res, next) => {
@@ -38,6 +14,7 @@ cocktailRouter
       .catch(next);
   });
 
+// Returns an array of ingredients that match query string
 cocktailRouter
   .route('/ingredient/:ingredientName')
   .get((req, res, next) => {
@@ -49,7 +26,7 @@ cocktailRouter
       .catch(next)
   })
 
-
+  // Returns the drink with id that matches the query string
   cocktailRouter
   .route('/id/:drinkId')
   .get((req, res, next) => {
@@ -61,6 +38,19 @@ cocktailRouter
       .catch(next)
   })
 
+  // Returns an array of all drinks served in the type of glass matching the query string
+  cocktailRouter
+    .route('/glass/:glassType')
+    .get ((req, res, next) => {
+      CocktailService.searchByGlassType(req.params.glassType)
+        .then(drinks => 
+          res
+            .status(200)
+            .json(drinks))
+        .catch(next)
+    })
+
+  // Returns an array of all possible ingredients
   cocktailRouter
   .route('/list/ingredient')
   .get((req, res, next) => {
@@ -72,6 +62,7 @@ cocktailRouter
       .catch(next)
   })
 
+  // Returns an array of all possible glasses
   cocktailRouter
   .route('/list/glass')
   .get((req, res, next) => {
