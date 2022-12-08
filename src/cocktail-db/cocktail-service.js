@@ -26,9 +26,8 @@ const CocktailService = {
         };
       });
 
-      // Finally, return number of results and the parsed drink data
+      // Finally, return the parsed drink data
       return {
-        numberOfResults: res.data.drinks.length,
         drinks: parsedData
       };
     }
@@ -58,7 +57,6 @@ const CocktailService = {
       });
 
       return {
-        numberOfResults: res.data.drinks.length,
         drinks: parsedData
       };
     }
@@ -87,7 +85,6 @@ const CocktailService = {
       });
 
       return {
-        numberOfResults: res.data.drinks.length,
         drinks: parsedData
       };
     }
@@ -100,46 +97,42 @@ const CocktailService = {
   async searchById(drinkId) {
 
     try {
-
       const res = await axios.get(`/lookup.php?i=${drinkId}`);
 
       if (res.data.drinks === null) {
-        return {
-          drinks: []
-        };
+        return null;
       }
-      let parsedData = res.data.drinks.map(drink => {
+      const drink = res.data.drinks[ 0 ];
 
-        let tags = drink.strTags.split(',');
-        let ingredients = [];
-        let measure = [];
-        let alcohol = drink.strAlcoholic === 'alcoholic' ? true : false
+      let tags = drink.strTags.split(',');
+      let ingredients = [];
+      let measure = [];
+      let alcoholic = drink.strAlcoholic === 'Alcoholic' ? true : false;
 
-        for (let i = 1; drink[ 'strIngredient' + i ] !== null; i++) {
+      for (let i = 1; drink[ 'strIngredient' + i ] !== null; i++) {
 
-          ingredients.push(drink[ 'strIngredient' + i ]);
-          measure.push(drink[ 'strMeasure' + i ]);
-        }
+        ingredients.push(drink[ 'strIngredient' + i ]);
+        measure.push(drink[ 'strMeasure' + i ]);
+      }
 
-
-        return {
-          id: drink.idDrink,
-          name: drink.strDrink,
-          thumbnail: drink.strDrinkThumb,
-          category: drink.strCategory,
-          tags: tags,
-          IBA: drink.strIBA,
-          glass: drink.strGlass,
-          instructions: drink.strInstructions,
-          alcholic: alcohol,
-          ingredients: ingredients,
-          measure: measure,
-        };
-      });
+      const parsedData = {
+        id: drink.idDrink,
+        name: drink.strDrink,
+        thumbnail: drink.strDrinkThumb,
+        category: drink.strCategory,
+        tags: tags,
+        IBA: drink.strIBA,
+        glass: drink.strGlass,
+        instructions: drink.strInstructions,
+        alcoholic: alcoholic,
+        ingredients: ingredients,
+        measure: measure,
+      };
 
       return {
-        drinks: parsedData
+        drinks: [ parsedData ]
       };
+
     }
     catch (err) {
       console.log(`Error: ${err}`);
@@ -147,29 +140,19 @@ const CocktailService = {
     }
   },
 
-  async listGlass() {
+  async listGlassesAndIngredients() {
     try {
-      const res = await axios.get(`/list.php?g=list`);
+      const resGlasses = await axios.get(`/list.php?g=list`);
 
-      let parsedData = res.data.drinks.map(glass => glass.strGlass);
+      let parsedGlassData = resGlasses.data.drinks.map(glass => glass.strGlass);
+
+      const resIngredients = await axios.get(`/list.php?i=list`);
+
+      let parsedIngredientsData = resIngredients.data.drinks.map(ingredient => ingredient.strIngredient1);
 
       return {
-        glasses: parsedData
-      };
-    }
-    catch (err) {
-      console.log(`Error: ${err}`);
-      throw err;
-    }
-  },
-
-  async listIngredient() {
-    try {
-      const res = await axios.get(`/list.php?i=list`);
-
-      let parsedData = res.data.drinks.map(ingredient => ingredient.strIngredient1);
-      return {
-        ingredients: parsedData
+        glasses: parsedGlassData,
+        ingredients: parsedIngredientsData
       };
     }
     catch (err) {

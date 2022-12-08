@@ -18,6 +18,7 @@ app.use(cors({
   origin: CLIENT_ORIGIN
 }));
 
+// Route for cocktail-app endpoint
 app.use('/api/cocktail', cocktailRouter)
 
 app.get('/api', (req, res) => {
