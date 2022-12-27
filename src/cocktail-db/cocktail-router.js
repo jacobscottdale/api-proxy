@@ -34,7 +34,7 @@ cocktailRouter
       .then(drink => {
         if (!drink) {
           return res
-            .sendStatus(404)
+            .sendStatus(404);
         }
         return res
           .status(200)

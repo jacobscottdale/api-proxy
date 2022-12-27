@@ -12,7 +12,6 @@ const CocktailService = {
       // If API returns no drink data, return 0 results and an empty array
       if (res.data.drinks === null) {
         return {
-          numberOfResults: 0,
           drinks: []
         };
       }
@@ -98,13 +97,12 @@ const CocktailService = {
 
     try {
       const res = await axios.get(`/lookup.php?i=${drinkId}`);
-
-      if (res.data.drinks === null) {
-        return null;
-      }
       const drink = res.data.drinks[ 0 ];
+      let tags;
+      if (drink.strTags) {
+        tags = drink.strTags.split(',');
+      }
 
-      let tags = drink.strTags.split(',');
       let ingredients = [];
       let measure = [];
       let alcoholic = drink.strAlcoholic === 'Alcoholic' ? true : false;
@@ -115,15 +113,17 @@ const CocktailService = {
         measure.push(drink[ 'strMeasure' + i ]);
       }
 
+      let instructions = drink.strInstructions.split('.')
+
       const parsedData = {
         id: drink.idDrink,
         name: drink.strDrink,
-        thumbnail: drink.strDrinkThumb,
+        thumbnailURL: drink.strDrinkThumb,
         category: drink.strCategory,
         tags: tags,
         IBA: drink.strIBA,
         glass: drink.strGlass,
-        instructions: drink.strInstructions,
+        instructions: instructions,
         alcoholic: alcoholic,
         ingredients: ingredients,
         measure: measure,
